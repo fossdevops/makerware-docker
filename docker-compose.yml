@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  conveyor:
+    image: ghcr.io/fossdevops/makerware-conveyor-docker:main
+    volumes:
+      - conveyor_service_dir:/var/run/conveyor
+      - conveyor_log_dir:/var/log/conveyor
+    depends_on:
+      - conveyord_log
+      - conveyor_svc_log
+    devices:
+      # This is the serial link to the makerbot
+      - "${MAKERBOT_SERIAL_DEVICE:-/dev/ttyACM0}:${MAKERBOT_SERIAL_DEVICE:-/dev/ttyACM0}"
+      # Copy the udev rule 55-makerbot-dev.rules (in the repo this came from or at /lib/udev/rules.d/ in the container)
+      # to /etc/udev/rules.d/ and reload the rules (sudo udevadm control --reload-rules) before plugging in and turning on the makerbot
+
+      # Value is something like /dev/makerbot/makerbot-1-7.2.4 .  This will be different on evey machine depending on usb layout.
+      # find it with `ls -la /dev/makerbot/`.  This is the full path.
+      - "${MAKERBOT_DEVICE}:${MAKERBOT_DEVICE}"
+
+  conveyord_log:
+    image: ghcr.io/fossdevops/makerware-conveyor-docker:main
+    volumes:
+      - conveyor_log_dir:/var/log/conveyor:ro
+    entrypoint: ["/usr/bin/tail", "-f", "/var/log/conveyor/conveyord.log"]
+
+  conveyor_svc_log:
+    image: ghcr.io/fossdevops/makerware-conveyor-docker:main
+    volumes:
+      - conveyor_log_dir:/var/log/conveyor:ro
+    entrypoint: ["/usr/bin/tail", "-f", "/var/log/conveyor/conveyor-svc.log"]
+
+  makerware:
+    image: ghcr.io/fossdevops/makerware-docker:main
+    volumes:
+      - conveyor_service_dir:/var/run/conveyor
+      - conveyor_log_dir:/var/log/conveyor:ro
+      - $XSOCKET:$XSOCKET
+      - $XAUTHORITY:$XAUTHORITY
+      - $HOME:/data
+    depends_on:
+      - conveyor
+    devices:
+      - /dev/dri:/dev/dri
+      # only for nvidia devices
+      #- /dev/nvidia0
+      #- /dev/nvidiactl
+      #- /dev/nvidia-modeset
+      #- /dev/nvidia-uvm
+      #- /dev/nvidia-uvm-tools
+      - /dev/vga_arbiter
+    environment:
+      - DISPLAY=$DISPLAY
+      - XAUTHORITY=$XAUTHORITY
+
+volumes:
+  # volume used to share the unix socket
+  conveyor_service_dir:
+  conveyor_log_dir:

@@ -1,0 +1,8 @@
+# Special symlinks for all MakerBot 3D printers.
+SUBSYSTEM!="usb", GOTO="makerbot_end"
+ENV{DEVTYPE}!="usb_device",  GOTO="makerbot_end"
+
+# Any machine with the Makerbot Vendor ID
+ATTRS{idVendor}=="23c1", SYMLINK+="makerbot/makerbot-%k", MODE="666"
+
+LABEL="makerbot_end"
