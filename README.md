@@ -10,8 +10,6 @@ Docker image to run Makerbot makerware (Makerbot Desktop)
 ## TODO:
  - Try changing default device settings (dont know if that works)
  - Add some way to restart the conveyor service container triggered from the makerware container
-   (hook the systemctl restart to rm conveyord.pid [used to mark service healthy])
- - try printing something
  - try a firmware update
  - only tested with a makerbot replicator 2
  - only tested on linux (but modern linux! debian unstable). meaning havent tried on Windows with wsl2 or OSX with docker desktop.
@@ -24,4 +22,4 @@ Docker image to run Makerbot makerware (Makerbot Desktop)
  - Run the `run.sh` script.  By default, the user's home directory will be applied as a mount and be visible in the Makerbot Desktop app, but nothing else
 
 ## Please note
-The docker-compose file is not directed at nvidia user.  This doesnt mean it wont work, but may need some slight changes.  Notes for this are in the docker-compose.yml file
+The docker-compose file is not directed at nvidia users.  This doesnt mean it wont work, but may need some slight changes. I primarily work on an intel platform with a built-in HD gpu, so that was my target.  Notes for possible chnages needed for nvidia gpu acceloration are in the `docker-compose.yml` file

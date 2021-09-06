@@ -6,6 +6,7 @@ services:
     volumes:
       - conveyor_service_dir:/var/run/conveyor
       - conveyor_log_dir:/var/log/conveyor
+      - tmp_dir:/tmp
     depends_on:
       - conveyord_log
       - conveyor_svc_log
@@ -36,6 +37,7 @@ services:
     volumes:
       - conveyor_service_dir:/var/run/conveyor
       - conveyor_log_dir:/var/log/conveyor:ro
+      - tmp_dir:/tmp
       - $XSOCKET:$XSOCKET
       - $XAUTHORITY:$XAUTHORITY
       - $HOME:/data
@@ -57,4 +59,7 @@ services:
 volumes:
   # volume used to share the unix socket
   conveyor_service_dir:
+  # volume used to show the logs
   conveyor_log_dir:
+  # volume used to share the sliced gcode files
+  tmp_dir:
